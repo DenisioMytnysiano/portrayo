@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
         with:
           context: ./app/frontend
           push: true
-          tags: ghcr.io/${{ github.repository }}/portrayo-frontend:latest
+          tags: ghcr.io/denisiomytnysiano/portrayo-frontend:latest
 
       - name: Image details
         run: |
