@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:4.0.2-management
+    container_name: portrayo-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  mongodb:
+    image: mongo:8.0
+    container_name: portrayo-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
+  rabbitmq_data:
