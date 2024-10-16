@@ -1,11 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import App from './App';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { useMemo } from 'react';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider as Emotion10ThemeProvider } from '@emotion/react';
-import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
 
 const RootApp = () => {
   // Dark mode is now always enabled
@@ -75,9 +74,11 @@ const RootApp = () => {
   );
 };
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <React.StrictMode>
     <RootApp />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
