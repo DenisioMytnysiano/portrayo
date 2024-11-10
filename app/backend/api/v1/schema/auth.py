@@ -10,6 +10,9 @@ class TokenResponse(BaseModel):
 
 class UserCreateRequest(BaseModel):
     username: str
-    email: Optional[str] = None
+    email: str
     password: str
-    full_name: Optional[str] = None
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
