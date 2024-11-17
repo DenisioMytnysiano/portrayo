@@ -2,11 +2,11 @@ from enum import Enum
 
 
 class BigFiveTraits(str, Enum):
-    OPENNESS = "openness"
-    CONSCIENTIOUSNESS = "conscientiousness"
-    EXTRAVERSION = "extraversion"
-    AGREEABLENESS = "agreeableness"
-    NEUROTICISM = "neuroticism"
+    OPENNESS = "Openness"
+    CONSCIENTIOUSNESS = "Conscientiousness"
+    EXTRAVERSION = "Extraversion"
+    AGREEABLENESS = "Agreeableness"
+    NEUROTICISM = "Neuroticism"
 
 
 class MBTITraits(str, Enum):

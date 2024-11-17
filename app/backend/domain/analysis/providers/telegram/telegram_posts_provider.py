@@ -20,32 +20,31 @@ class TelegramPostsProvider(PostsProvider):
         client = None
         try:
             client = await self._setup_client()
-            channel = await client.get_entity(self.channel_username)
+            async with client:
+                channel = await client.get_entity(self.channel_username)
 
-            if not isinstance(channel, Channel):
-                raise ValueError("Invalid Telegram channel URL")
+                if not isinstance(channel, Channel):
+                    raise ValueError("Invalid Telegram channel URL")
 
-            messages = await client.get_messages(channel, limit=limit)
-            return [
-                self._create_post(msg, channel)
-                for msg in messages
-                if msg.message and not msg.empty
-            ]
+                messages = await client.get_messages(channel, limit=limit)
+                return [
+                    self._create_post(msg, channel)
+                    for msg in messages
+                    if msg.message
+                ]
 
         finally:
             if client:
                 await client.disconnect()
 
     async def _setup_client(self) -> TelegramClient:
-        client = TelegramClient(
+        return TelegramClient(
             self.config.TELEGRAM_SESSION_NAME,
             self.config.TELEGRAM_API_ID,
             self.config.TELEGRAM_API_HASH,
             connection_retries=self.config.TELEGRAM_CONNECTION_RETRIES,
             timeout=self.config.TELEGRAM_CONNECTION_TIMEOUT
         )
-        await client.start()
-        return client
 
     def _create_post(self, message: Message, channel: Channel) -> Post:
         return Post(

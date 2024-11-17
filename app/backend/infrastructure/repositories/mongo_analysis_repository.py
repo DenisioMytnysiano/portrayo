@@ -12,9 +12,7 @@ class MongoAnalysisRepository(AnalysisRepository):
         await self.collection.insert_one(analysis_dict)
 
     async def get_analysis(self, user_id: str, analysis_id: str) -> Optional[Analysis]:
-        analysis_data = await self.collection.find_one(
-            {"id": analysis_id, "created_by": user_id}, {"_id": 0}
-        )
+        analysis_data = await self.collection.find_one({"id": analysis_id, "created_by": user_id}, {"_id": 0})
         if analysis_data:
             return Analysis(**analysis_data)
         return None
