@@ -10,7 +10,7 @@ from domain.entities.social_media import SocialMedia
 
 class LinkedInPostsProvider(PostsProvider):
     def __init__(self, user_profile_url: str, config: LinkedInConfig):
-        self.api = Linkedin(config.linkedin_username, config.linkedin_password)
+        self.api = Linkedin(config.LINKEDIN_USERNAME, config.LINKEDIN_PASSWORD)
         self.user_id = self._extract_user_id_from_url(user_profile_url)
 
     def _extract_user_id_from_url(self, user_profile_url: str) -> str:
@@ -20,9 +20,9 @@ class LinkedInPostsProvider(PostsProvider):
         linkedin_posts = self.api.get_profile_posts(self.user_id, post_count=limit)
         return [
             Post(
-                text=post.get("text", ""),
+                text=post["commentary"]["text"]["text"],
                 media=SocialMedia.LINKEDIN,
-                created_by=post.get("created_by", {}).get("name", "Unknown"),
+                created_by=post["actor"]["name"]["text"],
                 created_at=datetime.fromtimestamp(post.get("created_at", 0)),
             )
             for post in linkedin_posts
