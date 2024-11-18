@@ -55,7 +55,7 @@ def create(
 
 
 @router.post("/{id}/run", status_code=202)
-async def run(
+def run(
     id: str,
     user: User = Depends(get_current_user),
     repository: AnalysisRepository = Depends(get_analysis_repository),
@@ -64,8 +64,7 @@ async def run(
     if not analysis:
         raise HTTPException(404, "Analysis not found")
     results_repository.delete_results(analysis.id)
-    posts = await PostsProviderFactory.create(analysis.sources).get_posts()
-    analyze.delay(analysis, posts)
+    analyze.delay(analysis)
 
 
 @router.put("/{id}", response_model=AnalysisResponse)

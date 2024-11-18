@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import asdict
 from celery import chain
 from domain.analysis.models.trait_predictor_factory import TraitPredictorFactory
@@ -42,7 +43,10 @@ def set_status(analysis: Analysis, status: AnalysisStatus):
 
 
 @app.task(queue="run-analysis")
-def analyze(analysis, posts):
+def analyze(analysis):
+    loop = asyncio.new_event_loop()
+    posts = loop.run_until_complete(PostsProviderFactory.create(analysis.sources).get_posts())
+    print(posts)
     workflow = chain(
         set_status.si(analysis, AnalysisStatus.IN_PROGRESS),
         analyze_profile.si(analysis),
