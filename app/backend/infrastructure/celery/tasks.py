@@ -42,9 +42,7 @@ def set_status(analysis: Analysis, status: AnalysisStatus):
 
 
 @app.task(queue="run-analysis")
-def analyze(analysis):
-    posts = PostsProviderFactory.create(analysis.sources).get_posts()
-    print(posts)
+def analyze(analysis, posts):
     workflow = chain(
         set_status.si(analysis, AnalysisStatus.IN_PROGRESS),
         analyze_profile.si(analysis),

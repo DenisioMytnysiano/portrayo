@@ -1,5 +1,5 @@
 from typing import List
-from telethon import TelegramClient
+from telethon.sync import TelegramClient
 from telethon.tl.types import Channel, Message
 from urllib.parse import urlparse
 from domain.analysis.providers.telegram.config import TelegramConfig
@@ -17,17 +17,17 @@ class TelegramPostsProvider(PostsProvider):
     def _get_username_from_url(self, url: str) -> str:
         return urlparse(url).path.strip('/').replace('joinchat/', '')
     
-    def get_posts(self) -> List[Post]:
+    async def get_posts(self) -> List[Post]:
         client = None
         try:
             client = self._setup_client()
-            with client:
-                channel = client.get_entity(self.channel_username)
+            async with client:
+                channel = await client.get_entity(self.channel_username)
 
                 if not isinstance(channel, Channel):
                     raise ValueError("Invalid Telegram channel URL")
 
-                messages = client.get_messages(channel, limit=self.limit)
+                messages = await client.get_messages(channel, limit=self.limit)
                 return [
                     self._create_post(msg, channel)
                     for msg in messages
@@ -36,7 +36,7 @@ class TelegramPostsProvider(PostsProvider):
 
         finally:
             if client:
-                client.disconnect()
+                await client.disconnect()
 
     def _setup_client(self) -> TelegramClient:
         return TelegramClient(
