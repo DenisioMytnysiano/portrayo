@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List
 from domain.analysis.providers.linkedin.config import LinkedInConfig
+from domain.analysis.providers.linkedin.utils import get_date_from_linkedin_activity
 from domain.analysis.providers.posts_provider import PostsProvider
 from domain.entities.post import Post
 from linkedin_api import Linkedin
@@ -24,7 +25,7 @@ class LinkedInPostsProvider(PostsProvider):
                 text=post["commentary"]["text"]["text"],
                 media=SocialMedia.LINKEDIN,
                 created_by=post["actor"]["name"]["text"],
-                created_at=datetime.fromtimestamp(post.get("created_at", 0)),
+                created_at=get_date_from_linkedin_activity(post["dashEntityUrn"]),
             )
             for post in linkedin_posts
         ]
