@@ -20,7 +20,7 @@ For each post, look for:
 -	Agreeableness: Displays of compassion, friendliness, trust, or cooperation.
 -	Neuroticism: Clues of emotional instability, anxiety, mood swings, or stress.
 
-Return the detected personality traits as a comma-delimited set.
+Return the detected personality traits as a comma-delimited set, it should be the only text returned as a response.
 If a trait is not present, do not include it in the response.
 
 Example output: Openness, Neuroticism

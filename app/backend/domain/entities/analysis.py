@@ -13,10 +13,15 @@ class AnalysisStatus(str, Enum):
 
 
 @dataclass
+class PostSource:
+    url: str
+    limit: int
+
+@dataclass
 class Analysis:
     id: str
     name: str
-    urls: list[str]
+    sources: list[PostSource]
     type: PortraitType
     created_by: str
     created_at: datetime

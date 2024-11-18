@@ -9,14 +9,15 @@ from domain.entities.social_media import SocialMedia
 
 
 class TelegramPostsProvider(PostsProvider):
-    def __init__(self, url: str, config: TelegramConfig):
+    def __init__(self, url: str, limit: int, config: TelegramConfig):
         self.channel_username = self._get_username_from_url(url)
         self.config = config
-    
+        self.limit = limit
+
     def _get_username_from_url(self, url: str) -> str:
         return urlparse(url).path.strip('/').replace('joinchat/', '')
     
-    async def get_posts(self, limit: int = 100) -> List[Post]:
+    async def get_posts(self) -> List[Post]:
         client = None
         try:
             client = await self._setup_client()
@@ -26,7 +27,7 @@ class TelegramPostsProvider(PostsProvider):
                 if not isinstance(channel, Channel):
                     raise ValueError("Invalid Telegram channel URL")
 
-                messages = await client.get_messages(channel, limit=limit)
+                messages = await client.get_messages(channel, limit=self.limit)
                 return [
                     self._create_post(msg, channel)
                     for msg in messages

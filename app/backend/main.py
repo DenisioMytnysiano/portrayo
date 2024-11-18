@@ -1,10 +1,20 @@
 import uvicorn
+import logging
 from fastapi import FastAPI
 from api.v1.api import api_router
 from dotenv import load_dotenv
-load_dotenv()
+from contextlib import asynccontextmanager
+from infrastructure.db.mongo.setup import setup_mongo
 
-app = FastAPI()
+load_dotenv()
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await setup_mongo()
+    yield
+    
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_router)
 

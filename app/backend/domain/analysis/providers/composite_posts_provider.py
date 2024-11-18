@@ -8,8 +8,8 @@ class CompositePostsProvider(PostsProvider):
     def __init__(self, providers: List[PostsProvider]):
         self.providers = providers
 
-    async def get_posts(self, limit: int) -> List[Post]:
+    async def get_posts(self) -> List[Post]:
         result = []
         for provider in self.providers:
-            result.extend(await provider.get_posts(limit))
+            result.extend(await provider.get_posts())
         return result

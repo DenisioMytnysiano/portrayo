@@ -53,7 +53,7 @@ async def create(
     analysis = Analysis(
         id=str(uuid4()),
         name=analysis_data.name,
-        urls=analysis_data.urls,
+        sources=[detail.to_source() for detail in analysis_data.sources],
         type=analysis_data.type,
         created_by=user.id,
         created_at=datetime.utcnow(),
@@ -76,11 +76,11 @@ async def run(
     await analyze(analysis, results_repository)
 
 async def analyze(analysis: Analysis, results_repository: ResultsRepository):
-    provider = PostsProviderFactory.create(analysis.urls)
+    provider = PostsProviderFactory.create(analysis.sources)
     scores_calculator = TraitScoresCalculatorFactory.create(analysis)
     trait_predictor = TraitPredictorFactory.create(analysis)
 
-    posts = await provider.get_posts(10)
+    posts = await provider.get_posts()
     analyzed_posts = [
         AnalyzedPost(
             **asdict(post),
@@ -116,7 +116,7 @@ async def update(
     analysis = Analysis(
         id=existing_analysis.id,
         name=analysis_data.name,
-        urls=analysis_data.urls,
+        sources=[detail.to_source() for detail in analysis_data.sources],
         type=analysis_data.type,
         created_by=existing_analysis.created_by,
         created_at=existing_analysis.created_at,
