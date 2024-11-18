@@ -9,11 +9,13 @@ from infrastructure.db.mongo.setup import setup_mongo
 load_dotenv()
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    await setup_mongo()
+    setup_mongo()
     yield
-    
+
+
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_router)

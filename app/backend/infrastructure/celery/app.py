@@ -10,9 +10,9 @@ app.conf.update(
         "database": MongoConfig.DB_NAME,
         "taskmeta_collection": "celery-task-meta"
     },
-    task_serializer='json',
-    result_serializer='json',
-    accept_content=['json'],
+    task_serializer='pickle',
+    result_serializer='pickle',
+    accept_content=['pickle'],
     timezone='UTC',
     worker_prefetch_multiplier=1,
     task_acks_late=True,

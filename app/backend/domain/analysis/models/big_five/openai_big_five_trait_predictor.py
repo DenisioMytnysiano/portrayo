@@ -31,12 +31,12 @@ Post:
 
 class OpenAiBigFiveTraitPredictor(TraitPredictor):
     def __init__(self, config: OpenAiBigFiveTraitPredictorConfig):
-        self.client = openai.AsyncOpenAI(api_key=config.OPENAI_API_KEY)
+        self.client = openai.OpenAI(api_key=config.OPENAI_API_KEY)
         self.model = config.OPENAI_MODEL
 
-    async def predict(self, post: Post) -> List[Enum]:
+    def predict(self, post: Post) -> List[Enum]:
         formatted_prompt = PROMPT.format(post=post.text)
-        response = await self.client.chat.completions.create(
+        response = self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": formatted_prompt}],
             temperature=0,

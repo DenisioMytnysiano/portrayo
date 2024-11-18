@@ -1,5 +1,5 @@
-from motor.motor_tornado import MotorClient
+from pymongo import MongoClient
 from infrastructure.db.mongo.config import MongoConfig
 
-client = MotorClient(MongoConfig.URL)
+client = MongoClient(MongoConfig.URL)
 database = client.get_database(MongoConfig.DB_NAME)

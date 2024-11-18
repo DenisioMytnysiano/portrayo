@@ -8,29 +8,29 @@ class MongoAnalysisRepository(AnalysisRepository):
     def __init__(self, database):
         self.collection = database.get_collection("analyses")
 
-    async def create_analysis(self, analysis: Analysis) -> None:
+    def create_analysis(self, analysis: Analysis) -> None:
         analysis_dict = asdict(analysis)
-        await self.collection.insert_one(analysis_dict)
+        self.collection.insert_one(analysis_dict)
 
-    async def get_analysis(self, user_id: str, analysis_id: str) -> Optional[Analysis]:
-        doc = await self.collection.find_one({"id": analysis_id, "created_by": user_id}, {"_id": 0})
+    def get_analysis(self, user_id: str, analysis_id: str) -> Optional[Analysis]:
+        doc = self.collection.find_one({"id": analysis_id, "created_by": user_id}, {"_id": 0})
         if doc:
             return self.__doc_to_analysis(doc)
         return None
 
-    async def get_all_analyses(self, user_id: str) -> List[Analysis]:
-        docs = await self.collection.find({"created_by": user_id}, {"_id": 0}).to_list()
+    def get_all_analyses(self, user_id: str) -> List[Analysis]:
+        docs = self.collection.find({"created_by": user_id}, {"_id": 0})
         return [self.__doc_to_analysis(doc) for doc in docs]
 
-    async def update_analysis(self, analysis: Analysis) -> None:
-        analysis_dict = analysis.__dict__
-        await self.collection.update_one({"id": analysis.id}, {"$set": analysis_dict})
+    def update_analysis(self, analysis: Analysis) -> None:
+        analysis_dict = asdict(analysis)
+        self.collection.update_one({"id": analysis.id}, {"$set": analysis_dict})
 
-    async def delete_analysis(self, user_id: str, analysis_id: str) -> None:
-        await self.collection.delete_one({"id": analysis_id, "created_by": user_id})
+    def delete_analysis(self, user_id: str, analysis_id: str) -> None:
+        self.collection.delete_one({"id": analysis_id, "created_by": user_id})
 
-    async def update_analysis_status(self, analysis_id: str, status: AnalysisStatus) -> None:
-        await self.collection.update_one({"id": analysis_id}, {"$set": {"status": status}})
+    def update_analysis_status(self, analysis_id: str, status: AnalysisStatus) -> None:
+        self.collection.update_one({"id": analysis_id}, {"$set": {"status": status}})
 
     def __doc_to_analysis(self, doc: dict) -> Analysis:
         return Analysis(

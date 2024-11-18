@@ -1,0 +1,8 @@
+
+from infrastructure.db.mongo.database import database
+from infrastructure.repositories.mongo_analysis_repository import MongoAnalysisRepository
+from infrastructure.repositories.mongo_results_repository import MongoResultsRepository
+
+
+analysis_repository = MongoAnalysisRepository(database)
+results_repository = MongoResultsRepository(database)

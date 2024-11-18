@@ -5,5 +5,5 @@ from domain.entities.post import Post
 
 class TraitPredictor(Protocol):
 
-    async def predict(self, post: Post) -> List[Enum]:
+    def predict(self, post: Post) -> List[Enum]:
         pass

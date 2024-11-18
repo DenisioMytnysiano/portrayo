@@ -13,12 +13,12 @@ router = APIRouter()
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(
+def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     user_repository: UserRepository = Depends(get_user_repository),
     token_service: TokenService = Depends(get_token_service),
 ):
-    user = await user_repository.get_user(form_data.username)
+    user = user_repository.get_user(form_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -35,7 +35,7 @@ async def login(
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh(
+def refresh(
     request: RefreshTokenRequest,
     token_service: TokenService = Depends(get_token_service),
 ):
@@ -61,12 +61,12 @@ async def refresh(
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(
+def register(
     user: UserCreateRequest,
     user_repository: UserRepository = Depends(get_user_repository),
     hasher: PasswordHasher = Depends(get_password_hasher),
 ):
-    existing_user = await user_repository.get_user(user.username)
+    existing_user = user_repository.get_user(user.username)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

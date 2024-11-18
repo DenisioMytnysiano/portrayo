@@ -17,17 +17,17 @@ class TelegramPostsProvider(PostsProvider):
     def _get_username_from_url(self, url: str) -> str:
         return urlparse(url).path.strip('/').replace('joinchat/', '')
     
-    async def get_posts(self) -> List[Post]:
+    def get_posts(self) -> List[Post]:
         client = None
         try:
-            client = await self._setup_client()
-            async with client:
-                channel = await client.get_entity(self.channel_username)
+            client = self._setup_client()
+            with client:
+                channel = client.get_entity(self.channel_username)
 
                 if not isinstance(channel, Channel):
                     raise ValueError("Invalid Telegram channel URL")
 
-                messages = await client.get_messages(channel, limit=self.limit)
+                messages = client.get_messages(channel, limit=self.limit)
                 return [
                     self._create_post(msg, channel)
                     for msg in messages
@@ -36,9 +36,9 @@ class TelegramPostsProvider(PostsProvider):
 
         finally:
             if client:
-                await client.disconnect()
+                client.disconnect()
 
-    async def _setup_client(self) -> TelegramClient:
+    def _setup_client(self) -> TelegramClient:
         return TelegramClient(
             self.config.TELEGRAM_SESSION_NAME,
             self.config.TELEGRAM_API_ID,

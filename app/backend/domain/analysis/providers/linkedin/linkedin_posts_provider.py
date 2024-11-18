@@ -17,7 +17,7 @@ class LinkedInPostsProvider(PostsProvider):
     def _extract_user_id_from_url(self, user_profile_url: str) -> str:
         return user_profile_url.rstrip("/").split("/")[-1]
 
-    async def get_posts(self) -> List[Post]:
+    def get_posts(self) -> List[Post]:
         linkedin_posts = self.api.get_profile_posts(self.user_id, post_count=self.limit)
         return [
             Post(

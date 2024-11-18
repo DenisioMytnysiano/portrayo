@@ -31,7 +31,7 @@ def get_analysis_repository() -> AnalysisRepository:
 def get_results_repository() -> ResultsRepository:
     return MongoResultsRepository(database)
 
-async def get_current_user(
+def get_current_user(
     request: Request,
     token_service: Annotated[TokenService, Depends(get_token_service)],
     user_repository: Annotated[MongoUserRepository, Depends(get_user_repository)]
@@ -42,4 +42,4 @@ async def get_current_user(
     
     token = auth_header.split(" ")[1]
     user_id = token_service.verify_token(token)
-    return await user_repository.get_user(user_id)
+    return user_repository.get_user(user_id)
