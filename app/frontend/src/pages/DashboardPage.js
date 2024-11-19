@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Plot from 'react-plotly.js';
 import { useTheme } from '@mui/material/styles';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Avatar, Chip, Stack, TablePagination } from '@mui/material';
+import { ResultsService } from '../services/results.service';
+import PostDate from '../components/dashboard/PostDate';
 
 const DashboardPage = () => {
   const { analysisId } = useParams();
@@ -27,33 +29,23 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const fetchAnalysisData = async () => {
-      setTraitsData([
-        { trait: 'Openness', value: 70 },
-        { trait: 'Conscientiousness', value: 50 },
-        { trait: 'Extraversion', value: 60 },
-        { trait: 'Agreeableness', value: 80 },
-        { trait: 'Neuroticism', value: 40 },
-      ]);
-      setPersonName('John Doe');
-      setPersonAge(29);
-      setPersonLocation('New York, USA');
-      const postsData = [
-        { id: 1, content: 'This is the first post content.', date: '2024-10-01', author: 'Author A', traits: ['Openness', 'Extraversion'] },
-        { id: 2, content: 'Another interesting post.', date: '2024-10-02', author: 'Author B', traits: ['Conscientiousness', 'Agreeableness'] },
-        { id: 3, content: 'Insights on the topic.', date: '2024-10-03', author: 'Author C', traits: ['Neuroticism', 'Openness'] },
-        { id: 4, content: 'Deep thoughts on various topics.', date: '2024-10-04', author: 'Author D', traits: ['Openness'] },
-        { id: 5, content: 'A motivational quote.', date: '2024-10-05', author: 'Author E', traits: ['Extraversion', 'Agreeableness'] },
-        { id: 6, content: 'Reflections on the day.', date: '2024-10-06', author: 'Author F', traits: ['Conscientiousness'] },
-        { id: 7, content: 'Exciting news about a recent event.', date: '2024-10-07', author: 'Author G', traits: ['Extraversion'] },
-        { id: 8, content: 'Thoughts on staying organized.', date: '2024-10-08', author: 'Author H', traits: ['Conscientiousness', 'Neuroticism'] },
-        { id: 9, content: 'A calming message to relax.', date: '2024-10-09', author: 'Author I', traits: ['Agreeableness'] },
-        { id: 10, content: 'A controversial opinion.', date: '2024-10-10', author: 'Author J', traits: ['Neuroticism'] },
-        { id: 11, content: 'Updates on my latest project.', date: '2024-10-11', author: 'Author K', traits: ['Conscientiousness', 'Openness'] },
-        { id: 12, content: 'Enjoying the little things in life.', date: '2024-10-12', author: 'Author L', traits: ['Agreeableness', 'Extraversion'] },
-      ];
-      setPosts(postsData);
-      setFilteredPosts(postsData);
+      try {
+        const generalInfo = await ResultsService.getGeneralInfo(analysisId);
+        setPersonName(generalInfo.name);
+        setPersonAge(generalInfo.age);
+        setPersonLocation(generalInfo.location);
+
+        const traits = await ResultsService.getTraitScores(analysisId);
+        setTraitsData(traits.scores);
+
+        const postsData = await ResultsService.getPosts(analysisId);
+        setPosts(postsData);
+        setFilteredPosts(postsData);
+      } catch (error) {
+        console.error('Error fetching analysis data:', error);
+      }
     };
+
     fetchAnalysisData();
   }, [analysisId]);
 
@@ -67,6 +59,7 @@ const DashboardPage = () => {
         setSelectedTrait(trait);
         const filtered = posts.filter(post => post.traits.includes(trait));
         setFilteredPosts(filtered);
+        setPage(0)
       }
     }
   };
@@ -93,7 +86,7 @@ const DashboardPage = () => {
           data={[{
             type: 'bar',
             x: traitsData.map(trait => trait.trait),
-            y: traitsData.map(trait => trait.value),
+            y: traitsData.map(trait => trait.score),
             marker: {
               color: traitsData.map(trait => traitColors[trait.trait]),
             },
@@ -123,19 +116,21 @@ const DashboardPage = () => {
                 <TableRow>
                   <TableCell>Post Content</TableCell>
                   <TableCell>Extracted Traits</TableCell>
+                  <TableCell>Media</TableCell>
                   <TableCell>Date</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredPosts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((post) => (
                   <TableRow key={post.id}>
-                    <TableCell>{post.content}</TableCell>
+                    <TableCell>{post.text}</TableCell>
                     <TableCell>
                       {post.traits.map((trait) => (
                         <Chip key={trait + post.id} label={trait} sx={{ backgroundColor: traitColors[trait], marginRight: 1 }} />
                       ))}
                     </TableCell>
-                    <TableCell>{post.date}</TableCell>
+                    <TableCell>{post.media}</TableCell>
+                    <TableCell><PostDate date={post.created_at} /></TableCell>
                   </TableRow>
                 ))}
               </TableBody>

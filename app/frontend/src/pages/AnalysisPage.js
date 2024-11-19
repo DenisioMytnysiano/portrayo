@@ -76,18 +76,14 @@ const AnalysisPage = () => {
     }
   };
 
-  const handleRunAnalysis = async (id) => {
-    try {
-      const updatedAnalysis = await AnalysisService.runAnalysis(id);
-      setAnalyses(
-        analyses.map((analysis) =>
-          analysis.id === id ? updatedAnalysis : analysis
-        )
-      );
-    } catch (error) {
-      console.error('Error running analysis:', error);
-    }
+  const handleRunComplete = (updatedAnalysis) => {
+    setAnalyses(
+      analyses.map((analysis) =>
+        analysis.id === updatedAnalysis.id ? updatedAnalysis : analysis
+      )
+    );
   };
+
 
   const filteredAnalyses = analyses.filter(
     (analysis) =>
@@ -112,7 +108,7 @@ const AnalysisPage = () => {
         analyses={filteredAnalyses}
         selectedAnalysis={selectedAnalysis}
         setSelectedAnalysis={setSelectedAnalysis}
-        onRun={handleRunAnalysis}
+        onRunComplete={handleRunComplete}
         page={page}
         setPage={setPage}
       />
