@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Toolbar,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Paper,
-  TextField,
-  MenuItem,
-  TablePagination
-} from '@mui/material';
-import { Add, Edit, Delete, Output, PlayArrow } from '@mui/icons-material';
-import {AnalysisService} from '../services/analysis.service';
+import { AnalysisService } from '../services/analysis.service';
+import { Container, Typography } from '@mui/material';
+import AnalysisToolbar from '../components/analysis/AnalysisToolbar';
+import AnalysisTable from '../components/analysis/AnalysisTable';
+import CreateAnalysisPopup from '../components/analysis/CreateAnalysisPopup';
+import EditAnalysisPopup from '../components/analysis/EditAnalysisPopup';
 
 const AnalysisPage = () => {
   const [analyses, setAnalyses] = useState([]);
@@ -24,8 +12,8 @@ const AnalysisPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage] = useState(5);
-  const navigate = useNavigate();
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [editPopupOpen, setEditPopupOpen] = useState(false);
 
   useEffect(() => {
     const fetchAnalyses = async () => {
@@ -40,24 +28,30 @@ const AnalysisPage = () => {
     fetchAnalyses();
   }, []);
 
-  const handleCreateAnalysis = async () => {
+  const handleOpenPopup = () => setPopupOpen(true);
+  const handleClosePopup = () => setPopupOpen(false);
+
+  const handleCreateAnalysis = async (analysisData) => {
     try {
       const newAnalysis = await AnalysisService.createAnalysis({
-        name: `New Analysis`,
+        name: analysisData.name,
+        type: analysisData.type,
+        sources: analysisData.sources,
         status: 'In Progress',
       });
-      setAnalyses([...analyses, newAnalysis]);
+      setAnalyses([newAnalysis, ...analyses]);
     } catch (error) {
       console.error('Error creating analysis:', error);
     }
   };
 
-  const handleEditAnalysis = async () => {
+  const handleOpenEditPopup = () => setEditPopupOpen(true);
+  const handleCloseEditPopup = () => setEditPopupOpen(false);
+
+  const handleUpdateAnalysis = async (updatedData) => {
     if (selectedAnalysis) {
       try {
-        const updatedAnalysis = await AnalysisService.updateAnalysis(selectedAnalysis.id, {
-          name: `${selectedAnalysis.name} (Edited)`,
-        });
+        const updatedAnalysis = await AnalysisService.updateAnalysis(selectedAnalysis.id, updatedData);
         setAnalyses(
           analyses.map((analysis) =>
             analysis.id === selectedAnalysis.id ? updatedAnalysis : analysis
@@ -95,14 +89,6 @@ const AnalysisPage = () => {
     }
   };
 
-  const handleRowClick = (analysis) => {
-    setSelectedAnalysis(analysis);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
   const filteredAnalyses = analyses.filter(
     (analysis) =>
       analysis.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -112,108 +98,35 @@ const AnalysisPage = () => {
   return (
     <Container disableGutters className="analysis-container" sx={{ padding: 2 }}>
       <Typography variant="h4">Analysis Runs</Typography>
-      <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
-        <Toolbar disableGutters sx={{ justifyContent: 'flex-start', flexGrow: 1 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCreateAnalysis}
-            startIcon={<Add />}
-            sx={{ marginRight: 1 }}
-          >
-            Add
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleEditAnalysis}
-            startIcon={<Edit />}
-            disabled={!selectedAnalysis}
-            sx={{ marginRight: 1 }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleDeleteAnalysis}
-            startIcon={<Delete />}
-            disabled={!selectedAnalysis}
-          >
-            Remove
-          </Button>
-        </Toolbar>
-        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
-          <TextField
-            label="Search by Title"
-            size="small"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{ marginRight: 2 }}
-          />
-          <TextField
-            label="Filter by Status"
-            size="small"
-            select
-            sx={{ minWidth: 200 }}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="In Progress">In Progress</MenuItem>
-            <MenuItem value="Completed">Completed</MenuItem>
-            <MenuItem value="Failed">Failed</MenuItem>
-          </TextField>
-        </Toolbar>
-      </Toolbar>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableBody>
-            {filteredAnalyses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((analysis) => (
-              <TableRow
-                key={analysis.id}
-                onClick={() => handleRowClick(analysis)}
-                sx={{ cursor: 'pointer' }}
-                selected={selectedAnalysis?.id === analysis.id}
-              >
-                <TableCell size="small">{analysis.name}</TableCell>
-                <TableCell size="small">
-                  <Button
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRunAnalysis(analysis.id);
-                    }}
-                    startIcon={<PlayArrow />}
-                  ></Button>
-                </TableCell>
-                <TableCell size="small">
-                  <Typography noWrap size="small">{analysis.status}</Typography>
-                </TableCell>
-                <TableCell size="small" sx={{ textAlign: 'right', pr: 1 }}>
-                  <Button
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/dashboard/${analysis.id}`);
-                    }}
-                    disabled={analysis.status !== 'Completed'}
-                    endIcon={<Output />}
-                  ></Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          size="small"
-          rowsPerPageOptions={[5]}
-          component="div"
-          count={filteredAnalyses.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-        />
-      </TableContainer>
+      <AnalysisToolbar
+        onAdd={handleOpenPopup}
+        onEdit={handleOpenEditPopup}
+        onDelete={handleDeleteAnalysis}
+        selectedAnalysis={selectedAnalysis}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
+      <AnalysisTable
+        analyses={filteredAnalyses}
+        selectedAnalysis={selectedAnalysis}
+        setSelectedAnalysis={setSelectedAnalysis}
+        onRun={handleRunAnalysis}
+        page={page}
+        setPage={setPage}
+      />
+      <CreateAnalysisPopup
+        open={popupOpen}
+        onClose={handleClosePopup}
+        onSubmit={handleCreateAnalysis}
+      />
+      <EditAnalysisPopup
+        open={editPopupOpen}
+        onClose={handleCloseEditPopup}
+        onSubmit={handleUpdateAnalysis}
+        analysis={selectedAnalysis}
+      />
     </Container>
   );
 };

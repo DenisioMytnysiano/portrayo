@@ -36,9 +36,10 @@ export const AuthService = {
         TokenStorage.clearTokens();
     },
 
-    me(){
+    async me(){
         if(this.isLoggedIn()){
-            return {name: "Den"}
+            const response = await apiClient.get('/auth/me')
+            return response.data;
         }
     },
 
