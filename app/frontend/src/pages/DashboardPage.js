@@ -72,7 +72,7 @@ const DashboardPage = () => {
           <Avatar alt={profileInfo.name + profileInfo.surname} src="/path/to/profile-image.jpg" sx={{ width: 100, height: 100 }} />
           <Box>
             <Typography variant="body1">Name: {profileInfo.name}</Typography>
-            <Typography variant="body1">Name: {profileInfo.surname}</Typography>
+            <Typography variant="body1">Surname: {profileInfo.surname}</Typography>
             <Typography variant="body1">Age: {profileInfo.age || "unknown"}</Typography>
             <Typography variant="body1">Location: {profileInfo.location || "unknown"}</Typography>
             <Typography variant="body1">Occupation: {profileInfo.occupation || "unknown"}</Typography>
