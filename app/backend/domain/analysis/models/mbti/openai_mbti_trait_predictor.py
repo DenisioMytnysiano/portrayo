@@ -32,6 +32,14 @@ Judging (J) vs. Perceiving (P):
 Return the identified MBTI traits as a comma-separated list of traits.
 If a trait is not present, do not include it in the response.
 
+**Output Format:**  
+- Return the detected personality traits as a comma-delimited set.  
+- Do not include any reasoning or arbitrary text in the response.  
+- If a trait is not present, exclude it from the response.  
+
+**Example Output:**  
+Judging, Feeling  
+
 Post:
 {post}
 """

@@ -8,9 +8,7 @@ import PostDate from '../components/dashboard/PostDate';
 
 const DashboardPage = () => {
   const { analysisId } = useParams();
-  const [personName, setPersonName] = useState('');
-  const [personAge, setPersonAge] = useState('');
-  const [personLocation, setPersonLocation] = useState('');
+  const [profileInfo, setProfileInfo] = useState({});
   const [traitsData, setTraitsData] = useState([]);
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
@@ -30,10 +28,8 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchAnalysisData = async () => {
       try {
-        const generalInfo = await ResultsService.getGeneralInfo(analysisId);
-        setPersonName(generalInfo.name);
-        setPersonAge(generalInfo.age);
-        setPersonLocation(generalInfo.location);
+        const profileInfo = await ResultsService.getProfileInfo(analysisId);
+        setProfileInfo(profileInfo);
 
         const traits = await ResultsService.getTraitScores(analysisId);
         setTraitsData(traits.scores);
@@ -73,11 +69,13 @@ const DashboardPage = () => {
       <Stack spacing={2}>
         <Typography variant="h5" gutterBottom>Personal Information</Typography>
         <Box display="flex" alignItems="center" gap={2} sx={{ paddingBottom: 2 }}>
-          <Avatar alt={personName} src="/path/to/profile-image.jpg" sx={{ width: 100, height: 100 }} />
+          <Avatar alt={profileInfo.name + profileInfo.surname} src="/path/to/profile-image.jpg" sx={{ width: 100, height: 100 }} />
           <Box>
-            <Typography variant="body1">Name: {personName}</Typography>
-            <Typography variant="body1">Age: {personAge}</Typography>
-            <Typography variant="body1">Location: {personLocation}</Typography>
+            <Typography variant="body1">Name: {profileInfo.name}</Typography>
+            <Typography variant="body1">Name: {profileInfo.surname}</Typography>
+            <Typography variant="body1">Age: {profileInfo.age || "unknown"}</Typography>
+            <Typography variant="body1">Location: {profileInfo.location || "unknown"}</Typography>
+            <Typography variant="body1">Occupation: {profileInfo.occupation || "unknown"}</Typography>
             <Typography variant="body1">Analysis ID: {analysisId}</Typography>
           </Box>
         </Box>

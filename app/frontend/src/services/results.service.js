@@ -1,13 +1,8 @@
 import apiClient from '../utils/client';
 
 export const ResultsService = {
-  async getGeneralInfo(id) {
-    return {
-      name: "Denys Mytnyk",
-      age: 22,
-      location: "Kyiv, Ukraine"
-    }
-    const response = await apiClient.get(`/results/${id}/general-info`);
+  async getProfileInfo(id) {
+    const response = await apiClient.get(`/results/${id}/profile-info`);
     return response.data;
   },
 

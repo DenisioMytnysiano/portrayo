@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import List, Optional
 from domain.entities.post import AnalyzedPost
+from domain.entities.profile_info import AnalyzedProfileInfo
 from domain.entities.trait_scores import TraitScores
 from domain.repositories.results_repository import ResultsRepository
 
@@ -9,6 +10,19 @@ class MongoResultsRepository(ResultsRepository):
     def __init__(self, database):
         self.posts_collection = database.get_collection("posts")
         self.scores_collection = database.get_collection("scores")
+        self.profile_info_collection = database.get_collection("profile-infos")
+
+    def create_profile_info(self, info: AnalyzedProfileInfo) -> None:
+        if not info:
+            return
+        self.profile_info_collection.insert_one(info.__dict__)
+
+    def get_profile_info(self, analysis_id: str) -> AnalyzedProfileInfo:
+        profile_info = self.profile_info_collection.find_one({"analysis_id": analysis_id}, {"_id": 0})
+        return AnalyzedProfileInfo(**profile_info)
+
+    def delete_profile_info(self, analysis_id: str) -> None:
+        self.profile_info_collection.delete_one({"analysis_id": analysis_id})
 
     def create_posts(self, posts: List[AnalyzedPost]) -> None:
         if not posts:
@@ -37,5 +51,6 @@ class MongoResultsRepository(ResultsRepository):
         self.scores_collection.delete_one({"analysis_id": analysis_id})
 
     def delete_results(self, analysis_id: str) -> None:
+        self.delete_profile_info(analysis_id)
         self.delete_posts(analysis_id)
         self.delete_scores(analysis_id)

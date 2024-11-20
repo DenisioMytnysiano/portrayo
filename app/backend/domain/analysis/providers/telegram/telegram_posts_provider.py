@@ -4,11 +4,11 @@ from telethon.tl.types import Channel, Message
 from urllib.parse import urlparse
 from domain.analysis.providers.telegram.config import TelegramConfig
 from domain.entities.post import Post
-from domain.analysis.providers.posts_provider import PostsProvider
+from domain.analysis.providers.social_media_provider import SocialMediaProvider
 from domain.entities.social_media import SocialMedia
 
 
-class TelegramPostsProvider(PostsProvider):
+class TelegramSocialMediaProvider(SocialMediaProvider):
     def __init__(self, url: str, limit: int, config: TelegramConfig):
         self.channel_username = self._get_username_from_url(url)
         self.config = config

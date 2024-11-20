@@ -14,3 +14,6 @@ def setup_mongo():
 
     scores_collection = database.get_collection("scores")
     scores_collection.create_index([("analysis_id", pymongo.ASCENDING)])
+
+    profile_infos_collection = database.get_collection("profile-infos")
+    profile_infos_collection.create_index([("analysis_id", pymongo.ASCENDING)])

@@ -10,11 +10,11 @@ class BigFiveTraits(str, Enum):
 
 
 class MBTITraits(str, Enum):
-    EXTRAVERSION = "E"
-    INTROVERSION = "I"
-    SENSING = "S"
-    INTUITION = "N"
-    THINKING = "T"
-    FEELING = "F"
-    JUDGING = "J"
-    PERCEIVING = "P"
+    EXTRAVERSION = "Extraversion"
+    INTROVERSION = "Introversion"
+    SENSING = "Sensing"
+    INTUITION = "Intuition"
+    THINKING = "Thinking"
+    FEELING = "Feeling"
+    JUDGING = "Judjing"
+    PERCEIVING = "Perceiving"

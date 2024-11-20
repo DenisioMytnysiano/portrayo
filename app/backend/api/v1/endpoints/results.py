@@ -14,9 +14,22 @@ from domain.repositories.results_repository import ResultsRepository
 router = APIRouter()
 
 
-@router.get("/{id}/general-info")
-def get_general_info():
-    pass
+@router.get("/{id}/profile-info")
+def get_profile_info(
+    id: str,
+    user: User = Depends(get_current_user),
+    repository: AnalysisRepository = Depends(get_analysis_repository),
+    results_repository: ResultsRepository = Depends(get_results_repository)
+):
+    analysis = repository.get_analysis(user.id, id)
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    if analysis.status == AnalysisStatus.IN_PROGRESS:
+        return JSONResponse(status_code=202, content=None)
+    if analysis.status == AnalysisStatus.FAILED:
+        return JSONResponse(status_code=500, content="Error occured during the analysis.")
+    info = results_repository.get_profile_info(analysis.id)
+    return info
 
 
 @router.get("/{id}/traits")

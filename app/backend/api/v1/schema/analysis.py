@@ -25,12 +25,14 @@ class CreateAnalysisRequest(BaseModel):
 
 class UpdateAnalysisRequest(BaseModel):
     name: str
+    type: PortraitType
     sources: List[PostSourceDetails]
 
 
 class AnalysisResponse(BaseModel):
     id: str
     name: str
+    type: PortraitType
     sources: List[PostSourceDetails]
     status: AnalysisStatus
     created_at: datetime

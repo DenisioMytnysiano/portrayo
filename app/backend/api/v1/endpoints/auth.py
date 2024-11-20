@@ -2,7 +2,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError
-from api.v1.deps import get_password_hasher, get_token_service, get_user_repository
+from api.v1.deps import get_current_user, get_password_hasher, get_token_service, get_user_repository
 from api.v1.schema.auth import RefreshTokenRequest, TokenResponse, UserCreateRequest
 from domain.entities.user import User
 from domain.repositories.user_repository import UserRepository
@@ -11,6 +11,9 @@ from infrastructure.security.token_service import TokenService
 
 router = APIRouter()
 
+@router.get("/me")
+def me(user: User = Depends(get_current_user)):
+    return {"name": user.username}
 
 @router.post("/login", response_model=TokenResponse)
 def login(

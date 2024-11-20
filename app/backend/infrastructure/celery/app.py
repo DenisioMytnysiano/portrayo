@@ -1,6 +1,9 @@
 from celery import Celery
+from dotenv import load_dotenv
 from infrastructure.messaging.rabbitmq.config import RabbitMQConfig
 from infrastructure.db.mongo.config import MongoConfig
+load_dotenv()
+
 app = Celery('portrayo', include=["infrastructure.celery.tasks"])
 
 app.conf.update(

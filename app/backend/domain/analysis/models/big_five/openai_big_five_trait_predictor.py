@@ -8,24 +8,27 @@ from domain.entities.traits import BigFiveTraits
 
 
 PROMPT = """
-You are an expert in personality psychology, specializing in the analysis of text-based behavior.
-Your task is to analyze a user's social media posts to extract their Big Five personality traits.
-Based on the user's social media activity, identify and assess the following Big Five personality traits: Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism.
-Examine the user's posts for language patterns, emotional expressions, and interaction styles that align with these traits.
+You are an expert in personality psychology, specializing in the analysis of text-based behavior.  
+Your task is to analyze a user's social media posts to extract their Big Five personality traits.  
+Based on the user's social media activity, identify and assess the following Big Five personality traits: Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism.  
+Examine the user's posts for language patterns, emotional expressions, and interaction styles that align with these traits.  
 
-For each post, look for:
--	Openness: Signs of creativity, intellectual curiosity, or openness to new experiences.
--	Conscientiousness: Indications of responsibility, organization, or a goal-oriented mindset.
--	Extraversion: Evidence of social engagement, assertiveness, and talkativeness.
--	Agreeableness: Displays of compassion, friendliness, trust, or cooperation.
--	Neuroticism: Clues of emotional instability, anxiety, mood swings, or stress.
+For each post, look for:  
+- **Openness**: Signs of creativity, intellectual curiosity, or openness to new experiences.  
+- **Conscientiousness**: Indications of responsibility, organization, or a goal-oriented mindset.  
+- **Extraversion**: Evidence of social engagement, assertiveness, and talkativeness.  
+- **Agreeableness**: Displays of compassion, friendliness, trust, or cooperation.  
+- **Neuroticism**: Clues of emotional instability, anxiety, mood swings, or stress.  
 
-Return the detected personality traits as a comma-delimited set, it should be the only text returned as a response.
-If a trait is not present, do not include it in the response.
+**Output Format:**  
+- Return the detected personality traits as a comma-delimited set.  
+- Do not include any reasoning or arbitrary text in the response.  
+- If a trait is not present, exclude it from the response.  
 
-Example output: Openness, Neuroticism
+**Example Output:**  
+Openness, Neuroticism  
 
-Post:
+**Post:**
 {post}
 """
 

@@ -4,7 +4,6 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 from api.v1.deps import get_analysis_repository, get_current_user, get_results_repository
 from api.v1.schema.analysis import AnalysisResponse, CreateAnalysisRequest, UpdateAnalysisRequest
-from domain.analysis.providers.posts_provider_factory import PostsProviderFactory
 from domain.entities.analysis import Analysis, AnalysisStatus
 from domain.entities.user import User
 from domain.repositories.analysis_repository import AnalysisRepository
@@ -55,7 +54,7 @@ def create(
 
 
 @router.post("/{id}/run", status_code=202)
-def run(
+async def run(
     id: str,
     user: User = Depends(get_current_user),
     repository: AnalysisRepository = Depends(get_analysis_repository),
@@ -63,6 +62,8 @@ def run(
     analysis = repository.get_analysis(user.id, id)
     if not analysis:
         raise HTTPException(404, "Analysis not found")
+    analysis.status = AnalysisStatus.IN_PROGRESS
+    repository.update_analysis(analysis)
     results_repository.delete_results(analysis.id)
     analyze.delay(analysis)
 
@@ -73,6 +74,7 @@ def update(
     analysis_data: UpdateAnalysisRequest,
     user: User = Depends(get_current_user),
     repository: AnalysisRepository = Depends(get_analysis_repository),
+    results_repository: ResultsRepository = Depends(get_results_repository)
 ):
     existing_analysis = repository.get_analysis(user.id, id)
     if not existing_analysis:
@@ -94,6 +96,7 @@ def update(
     )
 
     repository.update_analysis(analysis)
+    results_repository.delete_results(analysis.id)
     return analysis
 
 
